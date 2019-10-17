@@ -1,0 +1,111 @@
+﻿<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Page</title>
+</head>
+<body>
+    <h1>Stream to me</h1>
+    <label>id of the simulation is:</label> <input type="text" readonly id="simId" />
+    <button type="button" onclick="startSimulation()">start simulation</button>
+    <button type="button" onclick="runTests()">run test messages</button>
+    <button type="button" onclick="getInitState()">get initial state</button>
+
+    <div>
+        <label>info:</label>
+        <div id="initState"></div>
+    </div>
+    <ul id="StreamToMe"></ul>
+
+    <script>
+        (function () {
+
+            document.getElementById("simId").value = uuidv4();
+
+            var getWebSocketMessages = function (onMessageReceived) {
+                var simId = document.getElementById("simId").value;
+                var url = `wss://${location.host}/api/stream/NewConnection/` + simId
+                console.log('url is: ' + url);
+
+                var webSocket = new WebSocket(url);
+
+                webSocket.onmessage = onMessageReceived;
+            };
+
+            var ulElement = document.getElementById('StreamToMe');
+
+            getWebSocketMessages(function (message) {
+                var messageAsJson = JSON.parse(message.data);
+                console.log(messageAsJson);
+
+                ulElement.innerHTML = ulElement.innerHTML += `<li>${message.data}</li>`
+            });
+        }());
+
+
+        function uuidv4() {
+            return 'xxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+    </script>
+    <script>
+        function startSimulation() {
+            var simId = document.getElementById("simId").value;
+            fetch(`https://${location.host}/api/Backoffice/startSimulation/` + simId,
+                {
+                    method: 'get',
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (myJson) {
+                    console.log(JSON.stringify(myJson));
+                });
+        }
+
+        function runTests() {
+            var simId = document.getElementById("simId").value;
+            fetch(`https://${location.host}/api/Backoffice/sendTestsMessage/` + simId,
+                {
+                    method: 'get',
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (myJson) {
+                    console.log(JSON.stringify(myJson));
+                });
+        }
+
+        function getInitState(){
+            fetch(`https://${location.host}/api/Backoffice/getInitialState`,
+                {
+                    method: 'get',
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (res) {
+
+                    var node = document.createElement("P");
+                    document.getElementById("initState").innerHTML = "";
+                    node.innerHTML = "";
+                    res.forEach(function (element) {
+                        var pretty = JSON.stringify(element, undefined, 4);
+                        node.innerHTML += "<p>new entity</p><pre onclick=deepdive('" + element.entity.id + "') id=" + element.entity.id + ">" + pretty + "</pre>";
+                        //node.innerHTML = pretty;
+                        //+ JSON.stringify(element);
+                    });
+                    document.getElementById("initState").appendChild(node);
+
+
+                    //document.getElementById("initState").value = myJson;
+                    console.log(JSON.stringify(res));
+                });
+        }
+        function deepdive(entityId) {
+        }
+    </script>
+</body>
+</html>

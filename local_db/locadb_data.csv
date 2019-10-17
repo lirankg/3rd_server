@@ -1,0 +1,6 @@
+﻿entity_id	start_time	end_time	longitude	latitude	log_description	data_a	data_b	c	d
+1	0	10	33.229648	35.133572	description for entity 1	this is a	this is b	this is c	this is d
+2	0	10	33.227648	35.135572	description for entity 2 first section	this is a	this is b	this is c	this is d
+3	5	20	33.225648	35.137572	description for entity 2 second section	this is a	this is b	this is c	this is d
+2	7	20	33.228648	35.136572	updating the location of 2	this is a	this is b	this is c	this is d
+1	10	20	33.228648	35.131572	updating the location of 1	this is a	this is b	this is c	this is d
